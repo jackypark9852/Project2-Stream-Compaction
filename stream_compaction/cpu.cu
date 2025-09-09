@@ -17,10 +17,14 @@ namespace StreamCompaction {
          * For performance analysis, this is supposed to be a simple for loop.
          * (Optional) For better understanding before starting moving to GPU, you can simulate your GPU scan in this function first.
          */
-        void scan(int n, int *odata, const int *idata) {
-            timer().startCpuTimer();
+        void scan(int n, int *odata, const int *idata, bool startTimer) {
+            if(startTimer) timer().startCpuTimer();
             // TODO
-            timer().endCpuTimer();
+            odata[0] = 0; 
+            for (int i = 1; i < n; ++i) {
+                odata[i] = idata[i - 1] + odata[i - 1]; 
+            }
+            if(startTimer) timer().endCpuTimer();
         }
 
         /**
@@ -30,9 +34,33 @@ namespace StreamCompaction {
          */
         int compactWithoutScan(int n, int *odata, const int *idata) {
             timer().startCpuTimer();
+            int cur = 0; 
+            for (int i = 0; i < n; ++i) {
+                if (idata[i] != 0) {
+                    odata[cur] = idata[i]; 
+                    ++cur; 
+                }
+            }
             // TODO
             timer().endCpuTimer();
-            return -1;
+            return cur;
+        }
+
+        void map(int n, int* odata, const int* idata) {
+            for (int i = 0; i < n; ++i) {
+                odata[i] = (idata[i] != 0); 
+            }
+        }
+
+        int scatter(int n, int* odata, const int* idata, const int* mdata, const int* sdata) {
+            int cnt = 0; 
+            for (int i = 0; i < n; ++i) {
+                if (mdata[i]) {
+                    odata[sdata[i]] = idata[i]; 
+                    ++cnt; 
+                }
+            }
+            return cnt; 
         }
 
         /**
@@ -41,10 +69,20 @@ namespace StreamCompaction {
          * @returns the number of elements remaining after compaction.
          */
         int compactWithScan(int n, int *odata, const int *idata) {
+            int* mdata = new int[n]; 
             timer().startCpuTimer();
-            // TODO
+
+            // store if element != 0 in mdata
+            map(n, mdata, idata); 
+
+            // exclusive sum on mapped data 
+            scan(n, odata, mdata, false); 
+
+            // compact stream 
+            int res = scatter(n, odata, idata, mdata, odata);
             timer().endCpuTimer();
-            return -1;
+            delete[] mdata; 
+            return res;
         }
     }
 }
