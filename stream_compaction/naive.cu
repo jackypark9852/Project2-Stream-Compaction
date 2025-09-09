@@ -11,15 +11,74 @@ namespace StreamCompaction {
             static PerformanceTimer timer;
             return timer;
         }
-        // TODO: __global__
+
+        /// <summary>
+        /// naive implementation of parallelized scan 
+        /// </summary>
+        /// <param name="n"> the number of elements; expects power of two </    param>
+        /// <param name="d"> the current iteration number </param>
+        /// <param name="odata"> the output buffer </param>
+        /// <param name="idata"> the input buffer </param>
+        /// <returns></returns>
+        __global__ void kernNaiveScan(int n, int d, int* odata, const int* idata) {
+            int k = (blockIdx.x * blockDim.x) + threadIdx.x;
+            if (k >= n) {
+                return; 
+            }
+            
+            int start = pow(2, d); 
+            odata[k] = (k >= start) ?
+                (idata[k - start] + idata[k]) :
+                idata[k];
+        }
+
+        __global__ void kernShiftRight(int n, int* odata, int* idata) {
+            int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+            if (index >= n) {
+                return;
+            }
+
+            odata[index] = (index == 0) ? 0 : idata[index - 1]; 
+        }
 
         /**
          * Performs prefix-sum (aka scan) on idata, storing the result into odata.
          */
         void scan(int n, int *odata, const int *idata) {
+            // next power of two 
+            int pot = pow(2, ilog2ceil(n)); 
+            
+            // initialize device side buffers 
+            // buffers are padded to the next power of two 
+            int* dev_idata;
+            int* dev_odata;
+            size_t byteSize = pot * sizeof(int); 
+            cudaMalloc(&dev_idata, byteSize);
+            cudaMalloc(&dev_odata, byteSize);
+            cudaMemset(dev_idata, 0, byteSize);
+            cudaMemset(dev_odata, 0, byteSize);
+            cudaMemcpy(dev_idata, idata, n * sizeof(int), cudaMemcpyHostToDevice); 
+
+            // launch config 
+            int blockSize = 128; 
+            int blockCount = (n + blockSize - 1) / blockSize; 
+            
+            // run naive scan 
             timer().startGpuTimer();
-            // TODO
+            for (int d = 0; d < ilog2ceil(n); ++d) {
+                kernNaiveScan << <blockCount, blockSize >> > (pot, d, dev_odata, dev_idata);
+                std::swap(dev_odata, dev_idata); 
+            }
+            kernShiftRight << < blockCount, blockSize >> > (n, dev_odata, dev_idata);
+
             timer().endGpuTimer();
+
+            // retrieve scan result from device 
+            cudaMemcpy(odata, dev_odata, n * sizeof(int), cudaMemcpyDeviceToHost);
+
+            // clean up resources 
+            cudaFree(dev_idata); 
+            cudaFree(dev_odata); 
         }
     }
 }
