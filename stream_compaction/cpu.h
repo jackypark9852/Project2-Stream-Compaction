@@ -6,7 +6,7 @@ namespace StreamCompaction {
     namespace CPU {
         StreamCompaction::Common::PerformanceTimer& timer();
 
-        void scan(int n, int* odata, const int* idata, bool startTimer = true);
+        void scan(int n, int *odata, const int *idata, bool startTimer = true);
 
         int compactWithoutScan(int n, int *odata, const int *idata);
 
