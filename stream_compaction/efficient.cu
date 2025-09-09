@@ -30,6 +30,19 @@ namespace StreamCompaction {
             data[k + stride - 1] += data[k + stride/2 - 1]; 
         }
 
+        __global__ void kernDownSweep(int n, int d, int* data) {
+            int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+            int stride = pow(2, d + 1);
+            int k = index * stride;
+            if (k >= n) {
+                return;
+            }
+            
+            int temp = data[k + stride/2 - 1]; // stride/2 is pow(2, d) 
+            data[k + stride / 2 - 1] = data[k + stride - 1]; 
+            data[k + stride - 1] += temp; 
+        }
+
         /**
          * Performs prefix-sum (aka scan) on idata, storing the result into odata.
          */
@@ -51,12 +64,20 @@ namespace StreamCompaction {
 
             // start scan process
             timer().startGpuTimer();
-            
             for (int d = 0; d <= ilog2ceil(n) - 1; ++d) {
-                kernUpSweep<<<blockCount, blockSize>>>(pot, d, dev_data); 
+                kernUpSweep << <blockCount, blockSize >> > (pot, d, dev_data);
             }
 
+            // prep for downsweep by setting last element to 0 
+            cudaMemset(dev_data + (pot - 1), 0, sizeof(int));
+
+            for (int d = ilog2ceil(n) - 1; d >= 0; --d) {
+                kernDownSweep << <blockCount, blockSize >> > (pot, d, dev_data);
+            }
             timer().endGpuTimer();
+
+            // fetch result from device 
+            cudaMemcpy(odata, dev_data + (pot - n), n * sizeof(int), cudaMemcpyDeviceToHost); 
         }
 
         /**
