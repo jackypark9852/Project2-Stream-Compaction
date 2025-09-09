@@ -70,7 +70,6 @@ namespace StreamCompaction {
                 std::swap(dev_odata, dev_idata); 
             }
             kernShiftRight << < blockCount, blockSize >> > (n, dev_odata, dev_idata);
-
             timer().endGpuTimer();
 
             // retrieve scan result from device 

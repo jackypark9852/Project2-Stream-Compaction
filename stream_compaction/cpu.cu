@@ -80,6 +80,7 @@ namespace StreamCompaction {
 
             // compact stream 
             int res = scatter(n, odata, idata, mdata, odata);
+
             timer().endCpuTimer();
             delete[] mdata; 
             return res;
