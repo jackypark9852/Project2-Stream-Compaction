@@ -1,0 +1,5 @@
+timestamp,test_id,exp,n,pot_kind,runs,ok_runs,avg_ms,std_ms,min_ms,max_ms,status
+2025-09-16T20:57:22Z,scan-cpu-pot,25,33554432,pot,10,10,51.376,3.191,47.622,57.712,ok
+2025-09-16T20:57:27Z,scan-naive-pot,25,33554432,pot,10,10,54.242,0.280,54.013,54.876,ok
+2025-09-16T20:57:30Z,scan-efficient-pot,25,33554432,pot,10,10,13.523,0.131,13.330,13.773,ok
+2025-09-16T20:57:34Z,scan-thrust-pot,25,33554432,pot,10,10,2.439,0.107,2.300,2.656,ok

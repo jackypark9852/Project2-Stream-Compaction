@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,1,0.350,ok
+RUN,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,2,0.308,ok
+RUN,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,3,0.142,ok
+RUN,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,4,0.247,ok
+RUN,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,5,0.112,ok
+SUMMARY,2025-09-15T20:50:46Z,compact-efficient-npot,6,61,npot,5,5,0.232,0.092,0.112,0.350,ok

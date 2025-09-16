@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,1,0.152,ok
+RUN,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,2,0.018,ok
+RUN,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,3,0.018,ok
+RUN,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,4,0.019,ok
+RUN,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,5,0.020,ok
+SUMMARY,2025-09-15T20:50:27Z,scan-naive-npot,2,1,npot,5,5,0.046,0.053,0.018,0.152,ok

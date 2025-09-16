@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,1,0.386,ok
+RUN,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,2,0.382,ok
+RUN,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,3,0.386,ok
+RUN,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,4,0.396,ok
+RUN,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,5,0.381,ok
+SUMMARY,2025-09-15T20:54:58Z,scan-thrust-npot,19,524285,npot,5,5,0.386,0.005,0.381,0.396,ok

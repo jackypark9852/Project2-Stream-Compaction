@@ -1,0 +1,11 @@
+RUN,2025-09-16T20:59:44Z,scan-efficient-pot,25,33554432,pot,1,13.570,ok
+RUN,2025-09-16T20:59:44Z,scan-efficient-pot,25,33554432,pot,2,13.492,ok
+RUN,2025-09-16T20:59:44Z,scan-efficient-pot,25,33554432,pot,3,13.837,ok
+RUN,2025-09-16T20:59:45Z,scan-efficient-pot,25,33554432,pot,4,13.619,ok
+RUN,2025-09-16T20:59:45Z,scan-efficient-pot,25,33554432,pot,5,13.626,ok
+RUN,2025-09-16T20:59:45Z,scan-efficient-pot,25,33554432,pot,6,13.611,ok
+RUN,2025-09-16T20:59:46Z,scan-efficient-pot,25,33554432,pot,7,13.570,ok
+RUN,2025-09-16T20:59:46Z,scan-efficient-pot,25,33554432,pot,8,13.532,ok
+RUN,2025-09-16T20:59:46Z,scan-efficient-pot,25,33554432,pot,9,13.673,ok
+RUN,2025-09-16T20:59:46Z,scan-efficient-pot,25,33554432,pot,10,13.391,ok
+SUMMARY,2025-09-16T20:59:46Z,scan-efficient-pot,25,33554432,pot,10,10,13.592,0.111,13.391,13.837,ok

@@ -1,0 +1,11 @@
+RUN,2025-09-16T20:57:31Z,scan-thrust-pot,25,33554432,pot,1,2.447,ok
+RUN,2025-09-16T20:57:31Z,scan-thrust-pot,25,33554432,pot,2,2.300,ok
+RUN,2025-09-16T20:57:32Z,scan-thrust-pot,25,33554432,pot,3,2.438,ok
+RUN,2025-09-16T20:57:32Z,scan-thrust-pot,25,33554432,pot,4,2.478,ok
+RUN,2025-09-16T20:57:32Z,scan-thrust-pot,25,33554432,pot,5,2.389,ok
+RUN,2025-09-16T20:57:33Z,scan-thrust-pot,25,33554432,pot,6,2.410,ok
+RUN,2025-09-16T20:57:33Z,scan-thrust-pot,25,33554432,pot,7,2.656,ok
+RUN,2025-09-16T20:57:33Z,scan-thrust-pot,25,33554432,pot,8,2.589,ok
+RUN,2025-09-16T20:57:33Z,scan-thrust-pot,25,33554432,pot,9,2.307,ok
+RUN,2025-09-16T20:57:34Z,scan-thrust-pot,25,33554432,pot,10,2.375,ok
+SUMMARY,2025-09-16T20:57:34Z,scan-thrust-pot,25,33554432,pot,10,10,2.439,0.107,2.300,2.656,ok

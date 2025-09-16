@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:55:23Z,compact-cpu-scan,23,8388608,pot,1,30.153,ok
+RUN,2025-09-15T20:55:23Z,compact-cpu-scan,23,8388608,pot,2,29.722,ok
+RUN,2025-09-15T20:55:24Z,compact-cpu-scan,23,8388608,pot,3,30.540,ok
+RUN,2025-09-15T20:55:24Z,compact-cpu-scan,23,8388608,pot,4,33.111,ok
+RUN,2025-09-15T20:55:24Z,compact-cpu-scan,23,8388608,pot,5,34.484,ok
+SUMMARY,2025-09-15T20:55:24Z,compact-cpu-scan,23,8388608,pot,5,5,31.602,1.863,29.722,34.484,ok

@@ -1,0 +1,4 @@
+build=Release
+exe=.\cis5650_stream_compaction_test.exe
+gpu=NVIDIA GeForce RTX 4070 Laptop GPU, 581.15
+timestamp=2025-09-15_16-54-04

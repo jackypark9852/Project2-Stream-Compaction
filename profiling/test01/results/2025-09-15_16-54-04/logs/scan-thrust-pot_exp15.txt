@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,1,0.077,ok
+RUN,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,2,0.039,ok
+RUN,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,3,0.023,ok
+RUN,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,4,0.023,ok
+RUN,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,5,0.054,ok
+SUMMARY,2025-09-15T20:54:50Z,scan-thrust-pot,15,32768,pot,5,5,0.043,0.020,0.023,0.077,ok

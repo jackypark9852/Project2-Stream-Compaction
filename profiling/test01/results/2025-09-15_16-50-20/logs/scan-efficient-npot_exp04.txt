@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,1,0.213,ok
+RUN,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,2,0.046,ok
+RUN,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,3,0.047,ok
+RUN,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,4,0.058,ok
+RUN,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,5,0.041,ok
+SUMMARY,2025-09-15T20:50:31Z,scan-efficient-npot,4,13,npot,5,5,0.081,0.066,0.041,0.213,ok

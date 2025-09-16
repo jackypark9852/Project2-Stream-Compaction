@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,1,0.696,ok
+RUN,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,2,0.618,ok
+RUN,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,3,0.628,ok
+RUN,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,4,0.629,ok
+RUN,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,5,0.606,ok
+SUMMARY,2025-09-15T20:54:37Z,scan-efficient-pot,22,4194304,pot,5,5,0.635,0.031,0.606,0.696,ok

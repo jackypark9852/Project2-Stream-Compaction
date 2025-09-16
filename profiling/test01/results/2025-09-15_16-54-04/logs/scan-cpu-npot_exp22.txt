@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:54:14Z,scan-cpu-npot,22,4194301,npot,1,6.969,ok
+RUN,2025-09-15T20:54:14Z,scan-cpu-npot,22,4194301,npot,2,7.285,ok
+RUN,2025-09-15T20:54:14Z,scan-cpu-npot,22,4194301,npot,3,7.500,ok
+RUN,2025-09-15T20:54:14Z,scan-cpu-npot,22,4194301,npot,4,7.780,ok
+RUN,2025-09-15T20:54:15Z,scan-cpu-npot,22,4194301,npot,5,6.882,ok
+SUMMARY,2025-09-15T20:54:15Z,scan-cpu-npot,22,4194301,npot,5,5,7.283,0.333,6.882,7.780,ok

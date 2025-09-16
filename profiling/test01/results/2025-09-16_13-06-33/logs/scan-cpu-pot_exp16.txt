@@ -1,0 +1,6 @@
+RUN,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,1,0.154,ok
+RUN,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,2,0.152,ok
+RUN,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,3,0.162,ok
+RUN,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,4,0.153,ok
+RUN,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,5,0.153,ok
+SUMMARY,2025-09-16T17:06:39Z,scan-cpu-pot,16,65536,pot,5,5,0.155,0.004,0.152,0.162,ok

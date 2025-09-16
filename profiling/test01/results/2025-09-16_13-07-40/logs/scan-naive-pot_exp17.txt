@@ -1,0 +1,6 @@
+RUN,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,1,0.260,ok
+RUN,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,2,0.313,ok
+RUN,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,3,0.166,ok
+RUN,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,4,0.508,ok
+RUN,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,5,0.227,ok
+SUMMARY,2025-09-16T17:12:36Z,scan-naive-pot,17,131072,pot,5,5,0.295,0.117,0.166,0.508,ok

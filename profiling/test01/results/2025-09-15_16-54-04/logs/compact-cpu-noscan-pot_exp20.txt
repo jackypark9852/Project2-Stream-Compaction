@@ -1,0 +1,6 @@
+RUN,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,1,2.353,ok
+RUN,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,2,3.109,ok
+RUN,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,3,2.280,ok
+RUN,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,4,2.190,ok
+RUN,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,5,2.313,ok
+SUMMARY,2025-09-15T20:55:06Z,compact-cpu-noscan-pot,20,1048576,pot,5,5,2.449,0.335,2.190,3.109,ok

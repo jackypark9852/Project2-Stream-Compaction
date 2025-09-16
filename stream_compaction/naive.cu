@@ -26,7 +26,7 @@ namespace StreamCompaction {
                 return; 
             }
             
-            int start = pow(2, d); 
+            int start = 1 << d; 
             odata[k] = (k >= start) ?
                 (idata[k - start] + idata[k]) :
                 idata[k];
@@ -46,7 +46,7 @@ namespace StreamCompaction {
          */
         void scan(int n, int *odata, const int *idata) {
             // next power of two 
-            int pot = pow(2, ilog2ceil(n)); 
+            int pot = 1 << ilog2ceil(n); 
             
             // initialize device side buffers 
             // buffers are padded to the next power of two 
@@ -60,7 +60,7 @@ namespace StreamCompaction {
             cudaMemcpy(dev_idata, idata, n * sizeof(int), cudaMemcpyHostToDevice); 
 
             // launch config 
-            int blockSize = 128; 
+            int blockSize = 8; 
             int blockCount = (n + blockSize - 1) / blockSize; 
             
             // run naive scan 
@@ -70,6 +70,7 @@ namespace StreamCompaction {
                 std::swap(dev_odata, dev_idata); 
             }
             kernShiftRight << < blockCount, blockSize >> > (n, dev_odata, dev_idata);
+            cudaDeviceSynchronize();
             timer().endGpuTimer();
 
             // retrieve scan result from device 

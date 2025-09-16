@@ -19,8 +19,9 @@ list(SORT sources)
 
 source_group(Headers FILES ${headers})
 source_group(Sources FILES ${sources})
-
+find_package(CCCL REQUIRED)
 add_library(stream_compaction ${sources} ${headers})
+target_link_libraries(stream_compaction CCCL::Thrust)
 if(CMAKE_VERSION VERSION_LESS "3.23.0")
     set_target_properties(stream_compaction} PROPERTIES CUDA_ARCHITECTURES OFF)
 elseif(CMAKE_VERSION VERSION_LESS "3.24.0")
