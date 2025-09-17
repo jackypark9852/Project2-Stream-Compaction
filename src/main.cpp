@@ -32,7 +32,7 @@ static int* c = nullptr;
 
 // ---------- Pretty-print helpers (non-CSV mode) ----------
 static void print_times_line(const char* label, const std::vector<float>& ts, const char* unit) {
-    printf("%s: ", label);
+    printf("%s\n: ", label);
     for (size_t i = 0; i < ts.size(); ++i) {
         printf("%.3f", ts[i]);
         if (i + 1 < ts.size()) printf(" | ");
@@ -42,16 +42,16 @@ static void print_times_line(const char* label, const std::vector<float>& ts, co
 static void print_avg_line(const std::vector<float>& ts, const char* unit) {
     float sum = std::accumulate(ts.begin(), ts.end(), 0.0f);
     float avg = (ts.empty() ? 0.0f : sum / ts.size());
-    printf("avg: %.3f %s\n\n", avg, unit);
+    printf("avg: %.3f %s\n", avg, unit);
 }
 
 // ---------- Args ----------
 struct Args {
-    int runs = 1;
+    int runs = 5;
     int exp = 28;
     bool csv = false;   // CSV mode: emit only RUN/SUMMARY lines, exactly one test
 
-    bool any = true;   // becomes true if any selection flag is used
+    bool any = false;   // becomes true if any selection flag is used
 
     // Group flags
     bool all = false;
@@ -381,6 +381,7 @@ int main(int argc, char* argv[]) {
             }
             print_times_line("cpu scan, power-of-two (ms)", ts, "");
             print_avg_line(ts, "ms");
+            printf("\n");
         }
 
         if (!ARGS.any || ARGS.all || ARGS.scans || ARGS.scan_cpu_npot) {

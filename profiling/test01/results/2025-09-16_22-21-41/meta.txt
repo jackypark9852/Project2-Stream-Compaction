@@ -1,0 +1,4 @@
+build=Release
+exe=C:\Users\jacky\Documents\cis-5650-graphics-programming\Project2-Stream-Compaction\build\bin\Release\cis5650_stream_compaction_test.exe
+gpu=NVIDIA GeForce RTX 4070 Laptop GPU, 581.15
+timestamp=2025-09-16_22-21-41

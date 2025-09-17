@@ -12,8 +12,6 @@ This project explores different implementations of **scan** (prefix sum) and **s
 
 These are fundamental building blocks in parallel computing, and they show up everywhere from sorting to rendering pipelines. The project starts with a CPU reference, then moves through increasingly optimized GPU versions, and finally compares them to Thrust’s built-in implementation.
 
----
-
 ## Implementation Approaches
 
 ### 1. CPU Baseline
@@ -75,7 +73,6 @@ It’s essentially a one-liner wrapping `thrust::exclusive_scan`, with device ve
 
 This gives us a performance ceiling. The Thrust version is heavily optimized and tuned for real workloads, so our custom implementations can be judged against it.
 
----
 ## Results
 
 ### Block Size Exploration
@@ -104,7 +101,8 @@ Why is that? I’m not entirely sure yet. My guess is that the limiting factor i
 
 For now, a block size of **32 threads** looked like a solid baseline across all implementations. All subsequent benchmarks were run with this configuration.
 
----
+--- 
+
 ### Scan Implementation Benchmarking
 
 With the block size fixed at 32, I benchmarked each scan implementation across input sizes from **2^7 up to 2^28**. Beyond 2^28, the CPU version took too long to be practical, so I capped the tests there. All results are in **milliseconds (ms)**.
@@ -142,13 +140,34 @@ Overall, this benchmark highlights how **algorithmic overhead vs. raw work savin
 - Work-efficient needs larger arrays before its advantages show.  
 - Thrust is simply the best tuned implementation, as long as the array size is large enough. 
 
---- 
-## Thrust Performance Analysis
+### Compact Performance Benchmarking  
 
-To understand why Thrust often outperforms my implementation, I profiled it with **Nsight Compute**. I had two goals:
+I also tested the compact functions that build on top of the scan implementations. Since there is no compact version built on the naive scan or Thrust scan, those entries are left as-is in the data. If compact functions were written for them, I would expect extra overhead from the additional **mapping** and **scattering** kernels.  
 
-1. Build a mental model of how Thrust structures its scan on the kernel level. I do not have the full source in front of me, but I want a reasonable picture.  
-2. Measure Thrust’s resource utilization so I have a clean baseline for my work-efficient scan.
+The results were mostly in line with expectations:  
+
+- At small input sizes, the **CPU compact without scan** was by far the fastest. Skipping the scan step makes it very lightweight.  
+- As array sizes grew, the **work-efficient compact** eventually pulled ahead, benefiting from the same asymptotic improvements we saw in its scan counterpart.  
+- Given how fast Thrust’s scan is, a full compact built on top of it would almost certainly be the fastest option overall.  
+
+<p align="center">
+  <img src="img/compact-perf-1.png" alt="Compact performance table part 1"/>
+</p>
+
+<p align="center">
+  <img src="img/compact-perf-2.png" alt="Compact performance table part 2"/>
+</p>
+
+<p align="center">
+  <img src="img/compact-perf-graph.png" alt="Compact performance graph"/>
+</p>
+
+## Scan Performance Profiling
+
+To dig deeper into why **Thrust often outperforms my work-efficient scan**, I profiled both implementations with **Nsight Compute**. My goals were:  
+
+1. Understand at a high level how the two approaches differ at the kernel level. Even without full source access, I want a reasonable picture of the contrast.  
+2. Compare resource utilization side by side, so I can see where my implementation pays overhead and where Thrust gains efficiency.  
 
 ### Results
 
@@ -175,11 +194,13 @@ Looking inside Thrust’s main `DeviceScanKernel`, the counters tell a consisten
 
 ### Why this makes sense
 
-My implementation pays a lot of overhead. I’m launching a lot of kernels, bouncing data back and forth through global memory, and syncing between upsweep and downsweep. On paper the algorithm is “work-efficient,” but at the scale I’m testing the overhead is what actually dominates.  
+My implementation pays a lot of overhead. I’m launching a ton of kernels, bouncing data back and forth through global memory, and syncing between upsweep and downsweep. On paper the algorithm is “work-efficient,” but at the scale I’m testing, the overhead is what actually dominates.
 
-Thrust, on the other hand, clearly does something much leaner. It only launches three kernels total, uses far fewer threads, and somehow manages better cache utilization. I don’t know exactly how it’s structured under the hood, but I’d guess it avoids the repeated passes over global memory that my version does. Since arithmetic is cheap and DRAM is slow, just cutting down those passes could explain a lot of the speedup.  
+It is also very likely memory-bound. I do not use shared memory at all, so every step goes straight to global memory. On top of that, the access pattern in upsweep and downsweep is not very friendly. Threads are probably hopping around in the array in a way that leads to frequent cache misses. Even though the arithmetic is trivial, memory stalls end up dragging performance down.
 
-The occupancy numbers also tell me that Thrust is simply doing more useful work per block. My version fragments the workload across tons of small kernels, while Thrust seems to keep warps busier and hide memory latency more effectively.  
+Thrust, on the other hand, clearly does something much leaner. It only launches three kernels total, uses far fewer threads, and manages better cache utilization. I do not know exactly how it is structured under the hood, but I would guess it avoids the repeated global memory passes that my version does, and stages more work in shared memory before writing back. Since arithmetic is cheap and DRAM is slow, just cutting down those global accesses could explain a lot of the speedup.
+
+The occupancy numbers also tell me that Thrust is simply doing more useful work per block. My version fragments the workload across many small kernels, while Thrust seems to keep warps busier and hide memory latency more effectively.
 
 ### What I’d try next
 
@@ -187,3 +208,80 @@ The occupancy numbers also tell me that Thrust is simply doing more useful work 
 - **Do more work per thread** instead of spreading it thin.  
 - **Use shared memory more aggressively** so I’m not constantly writing intermediates to global memory.  
 - **Profile with Nsight Compute** to see if the bottlenecks are really memory stalls, or something else I’m overlooking
+
+## Example Output 
+```
+Running with SIZE=2^28 (268435456), NPOT=268435453, runs=5
+
+****************
+** SCAN TESTS **
+****************
+    [  16  19  32  47   6  16  37  42  12  47  25   1  41 ...   5   0 ]
+cpu scan, power-of-two (ms)
+: 427.936 | 420.108 | 429.114 | 415.674 | 427.657
+avg: 424.098 ms
+
+cpu scan, non-power-of-two (ms)
+: 416.624 | 416.839 | 445.023 | 447.878 | 425.726
+avg: 430.418 ms
+    passed
+
+naive scan, power-of-two (ms)
+: 374.607 | 357.409 | 356.598 | 355.950 | 355.814
+avg: 360.076 ms
+    passed
+
+naive scan, non-power-of-two (ms)
+: 414.850 | 355.830 | 355.463 | 356.068 | 355.346
+avg: 367.511 ms
+    passed
+
+work-efficient scan, power-of-two (ms)
+: 123.602 | 109.718 | 110.412 | 109.744 | 109.850
+avg: 112.665 ms
+    passed
+
+work-efficient scan, non-power-of-two (ms)
+: 109.708 | 109.801 | 110.329 | 110.081 | 109.870
+avg: 109.958 ms
+    passed
+
+thrust scan, power-of-two (ms)
+: 14.754 | 12.387 | 14.174 | 12.664 | 14.861
+avg: 13.768 ms
+    passed
+
+thrust scan, non-power-of-two (ms)
+: 14.619 | 12.657 | 15.252 | 14.284 | 13.075
+avg: 13.977 ms
+    passed
+
+
+*****************************
+** STREAM COMPACTION TESTS **
+*****************************
+    [   3   3   1   3   0   1   0   1   0   3   2   2   3 ...   1   0 ]
+cpu compact without scan, power-of-two (ms)
+: 603.652 | 593.497 | 540.691 | 538.506 | 558.862
+avg: 567.042 ms
+    [   3   3   1   3   1   1   3   2   2   3   3   2   3 ...   1   1 ]
+    passed
+cpu compact without scan, non-power-of-two (ms)
+: 559.506 | 548.087 | 554.295 | 589.450 | 564.855
+avg: 563.239 ms
+    [   3   3   1   3   1   1   3   2   2   3   3   2   3 ...   1   2 ]
+    passed
+cpu compact with scan (ms)
+: 922.446 | 947.526 | 939.519 | 993.427 | 910.682
+avg: 942.720 ms
+    passed
+work-efficient compact, power-of-two (ms)
+: 348.703 | 185.831 | 187.355 | 186.687 | 188.540
+avg: 219.423 ms
+    passed
+work-efficient compact, non-power-of-two (ms)
+: 212.734 | 187.699 | 185.941 | 186.789 | 194.814
+avg: 193.596 ms
+    passed
+Press any key to continue . . .
+```

@@ -1,0 +1,6 @@
+RUN,2025-09-17T02:25:21Z,compact-efficient-pot,27,134217728,pot,1,108.142,ok
+RUN,2025-09-17T02:25:22Z,compact-efficient-pot,27,134217728,pot,2,107.397,ok
+RUN,2025-09-17T02:25:25Z,compact-efficient-pot,27,134217728,pot,3,109.855,ok
+RUN,2025-09-17T02:25:29Z,compact-efficient-pot,27,134217728,pot,4,143.658,ok
+RUN,2025-09-17T02:25:33Z,compact-efficient-pot,27,134217728,pot,5,165.642,ok
+SUMMARY,2025-09-17T02:25:33Z,compact-efficient-pot,27,134217728,pot,5,5,126.939,23.683,107.397,165.642,ok

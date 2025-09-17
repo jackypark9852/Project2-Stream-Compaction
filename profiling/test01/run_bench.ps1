@@ -34,18 +34,18 @@ try {
 
 # ---- Define tests (one flag each; your program prints test_id/pot_kind itself) ----
 $tests = @(
-  "--scan-cpu-pot",
+  # "--scan-cpu-pot",
   # "--scan-cpu-npot",
-  "--scan-naive-pot",
+  # "--scan-naive-pot",
   # "--scan-naive-npot",
-  "--scan-efficient-pot",
+  # "--scan-efficient-pot",
   # "--scan-efficient-npot",
-  "--scan-thrust-pot"
+ "--scan-thrust-pot",
   # "--scan-thrust-npot",
-  # "--compact-cpu-noscan-pot",
+   "--compact-cpu-noscan-pot",
   # "--compact-cpu-noscan-npot",
-  # "--compact-cpu-scan",
-  # "--compact-efficient-pot",
+   "--compact-cpu-scan",
+   "--compact-efficient-pot"
   # "--compact-efficient-npot"
 )
 
