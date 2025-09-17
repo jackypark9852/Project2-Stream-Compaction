@@ -105,4 +105,85 @@ Why is that? I’m not entirely sure yet. My guess is that the limiting factor i
 For now, a block size of **32 threads** looked like a solid baseline across all implementations. All subsequent benchmarks were run with this configuration.
 
 ---
+### Scan Implementation Benchmarking
 
+With the block size fixed at 32, I benchmarked each scan implementation across input sizes from **2^7 up to 2^28**. Beyond 2^28, the CPU version took too long to be practical, so I capped the tests there. All results are in **milliseconds (ms)**.
+
+<p align="center">
+  <img src="img/array-size-perf-1.png" alt="Scan performance table part 1"/>
+</p>
+
+<p align="center">
+  <img src="img/array-size-perf-2.png" alt="Scan performance table part 2"/>
+</p>
+
+<p align="center">
+  <img src="img/array-size-perf-graph.png" alt="Scan performance graph"/>
+</p>
+
+### Observations
+
+1. The **CPU implementation** was surprisingly competitive at small sizes. It outperformed all GPU scans up to about **2^13**. It even held its own until around **2^17**, when Thrust and the naive/efficient scans finally pulled ahead.  
+
+2. The **naive scan** only started to show meaningful gains over the CPU once the arrays grew beyond **2^17**. Before that, the overhead overshadowed any parallelism benefits.
+
+3. The **work-efficient scan** was actually *slower* than the naive approach until roughly **2^21**, after which its asymptotic advantage started to matter.  
+
+4. **NVIDIA’s Thrust implementation** was the clear winner among the GPU approaches. The only odd case was a sudden dip at **2^18**, which I suspect is tied to internal scheduling or memory effects.  
+
+Looking across the results, the story makes sense. For smaller inputs, both the CPU and naive scans hold their ground. The CPU wins early on because launching GPU kernels has a cost, and the naive scan is especially inefficient at small sizes due to all the idle threads created by the way it’s structured. In those cases, the CPU can just crunch through the data with more efficiency.  
+
+The work-efficient scan is designed to save operations in the long run, but that comes at the price of overhead. Each level of the binary tree requires separate kernel launches, and we end up launching on the order of `log(n)` kernels. For small arrays, this overhead dominates, which is why the naive scan actually looks better until around **2^21**. Past that point, the savings from reduced work finally outweigh the extra launches, and work-efficient pulls ahead.  
+
+Thrust is in a league of its own. It’s heavily optimized under the hood, probably using tricks like minimizing global memory traffic and maximizing occupancy. That explains why it consistently edges out the others, aside from the weird hiccup at **2^18**. Without digging into Nsight Compute or the library source, it’s hard to say exactly what happens there.  
+
+Overall, this benchmark highlights how **algorithmic overhead vs. raw work savings** plays out at different scales:  
+- CPU and naive are great for small arrays.  
+- Work-efficient needs larger arrays before its advantages show.  
+- Thrust is simply the best tuned implementation, as long as the array size is large enough. 
+
+--- 
+## Thrust Performance Analysis
+
+To understand why Thrust often outperforms my implementation, I profiled it with **Nsight Compute**. I had two goals:
+
+1. Build a mental model of how Thrust structures its scan on the kernel level. I do not have the full source in front of me, but I want a reasonable picture.  
+2. Measure Thrust’s resource utilization so I have a clean baseline for my work-efficient scan.
+
+### Results
+
+<p align="center">
+  <img src="img/thrust-compute-profile.png" alt="Thrust scan Nsight overview"/>
+</p>
+
+The first surprise is kernel count. Thrust’s scan shows **three kernels** total in the timeline. My work-efficient version launches **`upsweep` and `downsweep` about log2(n) times each**, so the difference is stark.
+
+For comparison, here is the same Nsight view on my work-efficient scan:
+
+<p align="center">
+  <img src="img/eff-compute-profile.png" alt="Work-efficient scan Nsight overview"/>
+</p>
+
+Even worse, a **single** `kernUpSweep` slice can take as long as Thrust’s entire scan kernel. That stings.
+
+Looking inside Thrust’s main `DeviceScanKernel`, the counters tell a consistent story:
+
+1. **Higher compute throughput**: 18.65% vs 9.19% for my kernel.  
+2. **Higher L1 and L2 cache throughput**: L1 is 18.96% vs 14.81%. L2 is 19.87% vs 17.16%.  
+3. **Far fewer threads launched**: 17,895,808 vs 134,217,728.  
+4. **Higher theoretical occupancy**: 83.33% vs 50%.
+
+### Why this makes sense
+
+My implementation pays a lot of overhead. I’m launching a lot of kernels, bouncing data back and forth through global memory, and syncing between upsweep and downsweep. On paper the algorithm is “work-efficient,” but at the scale I’m testing the overhead is what actually dominates.  
+
+Thrust, on the other hand, clearly does something much leaner. It only launches three kernels total, uses far fewer threads, and somehow manages better cache utilization. I don’t know exactly how it’s structured under the hood, but I’d guess it avoids the repeated passes over global memory that my version does. Since arithmetic is cheap and DRAM is slow, just cutting down those passes could explain a lot of the speedup.  
+
+The occupancy numbers also tell me that Thrust is simply doing more useful work per block. My version fragments the workload across tons of small kernels, while Thrust seems to keep warps busier and hide memory latency more effectively.  
+
+### What I’d try next
+
+- **Fuse phases** so there are fewer kernel launches.  
+- **Do more work per thread** instead of spreading it thin.  
+- **Use shared memory more aggressively** so I’m not constantly writing intermediates to global memory.  
+- **Profile with Nsight Compute** to see if the bottlenecks are really memory stalls, or something else I’m overlooking

@@ -47,11 +47,11 @@ static void print_avg_line(const std::vector<float>& ts, const char* unit) {
 
 // ---------- Args ----------
 struct Args {
-    int runs = 5;
-    int exp = 10;
+    int runs = 1;
+    int exp = 28;
     bool csv = false;   // CSV mode: emit only RUN/SUMMARY lines, exactly one test
 
-    bool any = false;   // becomes true if any selection flag is used
+    bool any = true;   // becomes true if any selection flag is used
 
     // Group flags
     bool all = false;

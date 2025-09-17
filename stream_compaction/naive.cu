@@ -60,7 +60,7 @@ namespace StreamCompaction {
             cudaMemcpy(dev_idata, idata, n * sizeof(int), cudaMemcpyHostToDevice); 
 
             // launch config 
-            int blockSize = 8; 
+            int blockSize = 32; 
             int blockCount = (n + blockSize - 1) / blockSize; 
             
             // run naive scan 

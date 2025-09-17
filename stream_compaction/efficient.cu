@@ -100,7 +100,7 @@ namespace StreamCompaction {
             cudaMemcpy(dev_data, idata, n * sizeof(int), memCpyMode);
 
             // launch config 
-            int blockSize = 8;
+            int blockSize = 32;
             // start scan process
             int exponent = ilog2ceil(n);
             int d; 
@@ -151,7 +151,7 @@ namespace StreamCompaction {
 
             cudaMemcpy(dev_idata, idata, n * sizeof(int), cudaMemcpyHostToDevice);
 
-            int blockSize = 8;
+            int blockSize = 32;
             int blockCount = (n + blockSize - 1) / blockSize;
 
             timer().startGpuTimer();
